@@ -1,0 +1,35 @@
+# 🎓 ĐỒ ÁN: PHÂN TÍCH HIỆU QUẢ HỌC TẬP SINH VIÊN
+> Sử dụng hệ sinh thái **Hadoop & Spark** để phân tích dữ liệu và xây dựng mô hình dự báo.
+
+---
+
+## 📋 Mục lục
+- [1. Giới thiệu](#1-giới-thiệu)
+- [2. Kiến trúc hệ thống](#2-kiến-trúc-hệ-thống)
+- [3. Phân tích dữ liệu (Spark SQL)](#3-phân-tích-dữ liệu-spark-sql)
+- [4. Học máy (Spark MLlib)](#4-học-máy-spark-mllib)
+- [5. Kết quả & Đề xuất](#5-kết-quả--đề-xuất)
+- [6. Thành viên nhóm](#6-thành-viên-nhóm)
+
+---
+
+## 1. Giới thiệu
+*(Tóm tắt mục đích đồ án và bối cảnh tại đây)*
+
+## 2. Kiến trúc hệ thống
+*(Chèn sơ đồ luồng dữ liệu ở đây)*
+
+## 3. Phân tích dữ liệu (Spark SQL)
+| Nhóm truy vấn | Kỹ thuật sử dụng | Mục tiêu |
+| :--- | :--- | :--- |
+| Thành tích | Window Functions | Xếp hạng sinh viên |
+| Xu hướng | LAG/LEAD | Theo dõi biến động GPA |
+| Rủi ro | CTE/Subquery | Phân loại sinh viên nguy cơ |
+
+## 4. Học máy (Spark MLlib)
+- **Supervised Learning**: Random Forest (Accuracy: 9X%)
+- **Unsupervised Learning**: K-Means Clustering (Elbow Method)
+
+---
+## 🚀 Hướng dẫn cài đặt
+*(Các lệnh cơ bản để chạy project)*
