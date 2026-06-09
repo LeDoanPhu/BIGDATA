@@ -108,6 +108,6 @@ spark-submit src/ml/train_model.py
 
 ---
 *Dự án được phát triển trong khuôn khổ Đồ án môn học Big Data - [06/2026].*
-*Tác giả: Nhóm 5 - Lê Doãn Phú
-                   Nguyễn Kiều Minh Trí
+*Tác giả: Nhóm 5 - Lê Doãn Phú,
+                   Nguyễn Kiều Minh Trí,
                    Nguyễn Khánh Hoàng*
