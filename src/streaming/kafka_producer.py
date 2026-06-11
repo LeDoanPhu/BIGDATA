@@ -1,3 +1,5 @@
+import argparse
+import argparse
 import json
 import os
 import sys
@@ -30,7 +32,7 @@ except ImportError as exc:
         'kafka-python is required to run this producer. Install with: pip install kafka-python'
     ) from exc
 
-LOCAL_DATA_PATH = Path(ROOT_DIR) / 'Data' / 'student_data'
+LOCAL_DATA_PATH = Path(ROOT_DIR) / 'Data' / 'student_data.csv'
 REMOTE_HDFS_PATH = f"{HDFS_URL.rstrip('/')}/student_data.csv"
 
 NUMERIC_FIELDS = [
@@ -44,9 +46,16 @@ NUMERIC_FIELDS = [
 ]
 
 
-def load_source_data(spark: SparkSession):
-    source_path = str(LOCAL_DATA_PATH) if LOCAL_DATA_PATH.exists() and LOCAL_DATA_PATH.stat().st_size > 0 else REMOTE_HDFS_PATH
-    print(f'Loading source data from: {source_path}')
+def load_source_data(spark: SparkSession, source_mode: str = 'auto'):
+    source_mode = source_mode.lower()
+    if source_mode == 'local':
+        source_path = str(LOCAL_DATA_PATH)
+    elif source_mode == 'hdfs':
+        source_path = REMOTE_HDFS_PATH
+    else:
+        source_path = str(LOCAL_DATA_PATH) if LOCAL_DATA_PATH.exists() and LOCAL_DATA_PATH.stat().st_size > 0 else REMOTE_HDFS_PATH
+
+    print(f'Loading source data from: {source_path} (mode={source_mode})')
     df = spark.read.csv(source_path, header=True, inferSchema=True)
     print(f'Read schema: {df.schema.simpleString()}')
     return df
@@ -129,7 +138,7 @@ def create_producer(broker_url: str):
     )
 
 
-def produce_to_kafka(df, topic: str, producer, interval_seconds: float = 1.0, max_records: int = None):
+def produce_to_kafka(df, topic: str, producer, interval_seconds: float = 0.0, max_records: int = None):
     print(f'Producing records to Kafka topic: {topic}')
     sent = 0
     for record in df.toJSON().toLocalIterator():
@@ -140,18 +149,29 @@ def produce_to_kafka(df, topic: str, producer, interval_seconds: float = 1.0, ma
             print(f'Sent {sent} records...')
         if max_records is not None and sent >= max_records:
             break
-        time.sleep(interval_seconds)
+        if interval_seconds > 0:
+            time.sleep(interval_seconds)
     producer.flush()
     print(f'Finished sending {sent} records.')
 
 
 def main():
+    parser = argparse.ArgumentParser(description='Kafka producer for student stream data')
+    parser.add_argument('--source', choices=['auto', 'local', 'hdfs'], default='auto',
+                        help='Where to read source CSV from: local file, HDFS, or auto detect')
+    parser.add_argument('--interval', type=float, default=0.0,
+                        help='Seconds between each produced record; use 0 for max throughput')
+    parser.add_argument('--max-records', type=int, default=None,
+                        help='Maximum number of records to send, or None to send all')
+    args = parser.parse_args()
+
     spark = create_spark_session(app_name='KafkaProducerETL')
     try:
-        raw_df = load_source_data(spark)
+        raw_df = load_source_data(spark, source_mode=args.source)
         cleaned_df = transform_data(raw_df)
         producer = create_producer(KAFKA_BROKER)
-        produce_to_kafka(cleaned_df, KAFKA_TOPIC, producer, interval_seconds=1.0, max_records=None)
+        produce_to_kafka(cleaned_df, KAFKA_TOPIC, producer,
+                         interval_seconds=args.interval, max_records=args.max_records)
     finally:
         spark.stop()
 
