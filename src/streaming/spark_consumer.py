@@ -19,8 +19,9 @@ except ImportError:
     from config.settings import HDFS_URL, KAFKA_BROKER, KAFKA_TOPIC
     from utils.spark_session import create_spark_session
 
-CHECKPOINT_LOCATION = ROOT_DIR / 'checkpoints' / 'spark_consumer'
-LOCAL_OUTPUT_PATH = ROOT_DIR / 'Data' / 'stream_output'
+HDFS_OUTPUT_BASE = f"{HDFS_URL.rstrip('/')}/stream_output"
+HDFS_CHECKPOINT_BASE = f"{HDFS_URL.rstrip('/')}/checkpoints"
+CHECKPOINT_LOCATION = f"{HDFS_CHECKPOINT_BASE}/spark_consumer"
 STREAM_SCHEMA = T.StructType([
     T.StructField('student_id', T.StringType(), True),
     T.StructField('age', T.IntegerType(), True),
@@ -50,8 +51,8 @@ NUMERIC_CLAMPING = [
 
 
 def ensure_paths():
-    CHECKPOINT_LOCATION.mkdir(parents=True, exist_ok=True)
-    LOCAL_OUTPUT_PATH.mkdir(parents=True, exist_ok=True)
+    if not str(CHECKPOINT_LOCATION).startswith('hdfs://'):
+        Path(CHECKPOINT_LOCATION).mkdir(parents=True, exist_ok=True)
 
 
 def parse_kafka_value(df):
@@ -153,7 +154,7 @@ def print_summary(df):
 
 
 def process_microbatch(batch_df, batch_id):
-    if batch_df.rdd.isEmpty():
+    if batch_df.isEmpty():
         print(f'Batch {batch_id}: no records')
         return
 
@@ -163,15 +164,15 @@ def process_microbatch(batch_df, batch_id):
     print(f'Batch {batch_id}: received {cleaned.count()} cleaned records')
     print_summary(cleaned)
 
-    output_path = LOCAL_OUTPUT_PATH / f'batch_{batch_id}'
-    cleaned.write.mode('overwrite').parquet(str(output_path))
+    output_path = f"{HDFS_OUTPUT_BASE}/batch_{batch_id}"
+    cleaned.write.mode('overwrite').parquet(output_path)
     print(f'Batch {batch_id}: written cleaned data to {output_path}')
 
 
 def main():
     ensure_paths()
     spark = create_spark_session(app_name='SparkKafkaConsumer')
-
+    spark.sparkContext.setLogLevel("WARN")
     kafka_df = (
         spark.readStream
              .format('kafka')
@@ -185,7 +186,7 @@ def main():
         kafka_df.writeStream
                 .foreachBatch(process_microbatch)
                 .option('checkpointLocation', str(CHECKPOINT_LOCATION))
-                .trigger(processingTime='10 seconds')
+                .trigger(processingTime='1 seconds')
                 .start()
     )
 
