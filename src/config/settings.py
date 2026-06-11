@@ -3,4 +3,4 @@ HDFS_URL = "hdfs://100.109.78.104:9000"
 
 # Cấu hình đường dẫn Kafka Broker
 KAFKA_BROKER = "100.109.78.104:9092"
-KAFKA_TOPIC = "du_lieu_sinh_vien_realtime"
+KAFKA_TOPIC = "student_stream"
