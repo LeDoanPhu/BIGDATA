@@ -194,6 +194,23 @@ def main():
             ORDER BY tuoi ASC
         """).show()
 
+        # --- CÂU 5 ---
+        print("\n--- BÁO CÁO 5: Điểm trung bình trượt môn đọc theo giờ tự học ---")
+        spark.sql("""
+            SELECT 
+                age AS tuoi, 
+                daily_study_hours AS gio_tu_hoc, 
+                reading_score AS diem_doc,
+                ROUND(AVG(reading_score) OVER (
+                    PARTITION BY age 
+                    ORDER BY daily_study_hours ASC 
+                    ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+                ), 2) AS trung_binh_truot_3_hoc_sinh
+            FROM student_stream 
+            ORDER BY age ASC, daily_study_hours ASC
+            LIMIT 15
+        """).show()
+
     except Exception as e:
         print(f"Lỗi: {e}")
     finally:
