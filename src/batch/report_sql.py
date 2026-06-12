@@ -295,6 +295,29 @@ def main():
             LIMIT 15
         """).show()
 
+        # --- CÂU 10 ---
+        print("\n--- BÁO CÁO 10: Xếp hạng mức độ chịu áp lực tổng hợp theo lứa tuổi ---")
+        spark.sql("""
+            WITH stress_index_table AS (
+                SELECT 
+                    age AS tuoi, 
+                    math_score AS diem_toan, 
+                    ROUND(SQRT(POW(stress_level, 2) + POW(sleep_hours, 2)), 2) AS chi_so_ap_luc_tong_hop
+                FROM student_stream
+            )
+            SELECT 
+                tuoi, 
+                diem_toan, 
+                chi_so_ap_luc_tong_hop, 
+                RANK() OVER (
+                    PARTITION BY tuoi 
+                    ORDER BY chi_so_ap_luc_tong_hop DESC, diem_toan ASC
+                ) AS xep_hang_chiu_ap_luc 
+            FROM stress_index_table 
+            ORDER BY tuoi ASC, xep_hang_chiu_ap_luc ASC
+            LIMIT 15
+        """).show()
+
     except Exception as e:
         print(f"Lỗi: {e}")
     finally:
