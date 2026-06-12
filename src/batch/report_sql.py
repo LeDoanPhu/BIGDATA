@@ -258,6 +258,27 @@ def main():
             LIMIT 15
         """).show()
 
+        # --- CÂU 8 ---
+        print("\n--- BÁO CÁO 8: Điểm viết cao nhất và thấp nhất theo từng mức độ stress ---")
+        spark.sql("""
+            SELECT 
+                stress_level AS muc_stress, 
+                writing_score AS diem_viet,
+                FIRST_VALUE(writing_score) OVER (
+                    PARTITION BY stress_level 
+                    ORDER BY writing_score DESC 
+                    ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+                ) AS diem_cao_nhat_nhom,
+                LAST_VALUE(writing_score) OVER (
+                    PARTITION BY stress_level 
+                    ORDER BY writing_score DESC 
+                    ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+                ) AS diem_thap_nhat_nhom 
+            FROM student_stream 
+            ORDER BY muc_stress DESC, diem_viet DESC
+            LIMIT 15
+        """).show()
+
     except Exception as e:
         print(f"Lỗi: {e}")
     finally:
