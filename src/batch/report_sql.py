@@ -116,6 +116,37 @@ def main():
             LIMIT 15
         """).show()
 
+        # --- CÂU 2 ---
+        print("\n--- BÁO CÁO 2: Điểm toán và mức độ stress theo nhóm thu nhập gia đình ---")
+        spark.sql("""
+            WITH rank_income_table AS (
+                SELECT 
+                    family_income, 
+                    stress_level, 
+                    math_score, 
+                    PERCENT_RANK() OVER (ORDER BY family_income DESC) AS xep_hang_thu_nhap 
+                FROM student_stream
+            ),
+            categorized_income_table AS (
+                SELECT *,
+                       CASE 
+                           WHEN xep_hang_thu_nhap <= 0.25 THEN 'Nhóm 1: Thu nhập Cao (Top 25%)'
+                           WHEN xep_hang_thu_nhap <= 0.50 THEN 'Nhóm 2: Thu nhập Khá'
+                           WHEN xep_hang_thu_nhap <= 0.75 THEN 'Nhóm 3: Thu nhập Trung bình'
+                           ELSE 'Nhóm 4: Thu nhập Thấp (Bottom 25%)'
+                       END AS nhom_thu_nhap
+                FROM rank_income_table
+            )
+            SELECT 
+                nhom_thu_nhap, 
+                COUNT(*) AS so_luong_hoc_sinh, 
+                ROUND(AVG(math_score), 2) AS trung_binh_diem_toan,
+                ROUND(AVG(stress_level), 2) AS muc_stress_binh_quan,
+                ROUND(STDDEV(math_score), 2) AS do_lech_chuan_diem_toan
+            FROM categorized_income_table
+            GROUP BY nhom_thu_nhap 
+            ORDER BY nhom_thu_nhap ASC
+        """).show()
     except Exception as e:
         print(f"Lỗi: {e}")
     finally:
