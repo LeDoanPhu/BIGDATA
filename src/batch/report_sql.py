@@ -211,6 +211,31 @@ def main():
             LIMIT 15
         """).show()
 
+        # --- CÂU 6 ---
+        print("\n--- BÁO CÁO 6: So sánh điểm đọc với mức bình quân theo học vấn cha mẹ và giới tính ---")
+        spark.sql("""
+            WITH variance_analysis AS (
+                SELECT 
+                    COALESCE(parental_education_level, 'Không rõ') AS hoc_van_cha_me, 
+                    gender AS gioi_tinh, 
+                    reading_score AS diem_doc,
+                    AVG(reading_score) OVER (PARTITION BY parental_education_level) AS tb_theo_hoc_van,
+                    AVG(reading_score) OVER (PARTITION BY gender) AS tb_theo_gioi_tinh
+                FROM student_stream
+            )
+            SELECT 
+                hoc_van_cha_me, 
+                gioi_tinh, 
+                diem_doc,
+                ROUND(tb_theo_hoc_van, 2) AS diem_chuan_theo_hoc_van,
+                ROUND(tb_theo_gioi_tinh, 2) AS diem_chuan_theo_gioi_tinh,
+                ROUND(diem_doc - tb_theo_hoc_van, 2) AS chenh_lech_so_voi_nhom_hoc_van,
+                ROUND(diem_doc - tb_theo_gioi_tinh, 2) AS chenh_lech_so_voi_nhom_gioi_tinh 
+            FROM variance_analysis 
+            ORDER BY chenh_lech_so_voi_nhom_hoc_van DESC
+            LIMIT 15
+        """).show()
+
     except Exception as e:
         print(f"Lỗi: {e}")
     finally:
