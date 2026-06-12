@@ -236,6 +236,28 @@ def main():
             LIMIT 15
         """).show()
 
+        # --- CÂU 7 ---
+        print("\n--- BÁO CÁO 7: Chỉ số Z-Score kiểm tra thời gian ngủ bất thường theo lứa tuổi ---")
+        spark.sql("""
+            WITH statistical_sleep_table AS (
+                SELECT 
+                    age AS tuoi, 
+                    sleep_hours AS gio_ngu, 
+                    AVG(sleep_hours) OVER (PARTITION BY age) AS gio_ngu_tb,
+                    STDDEV(sleep_hours) OVER (PARTITION BY age) AS do_lech_chuan_ngu 
+                FROM student_stream
+            )
+            SELECT 
+                tuoi, 
+                ROUND(gio_ngu, 2) AS gio_ngu_thuc_te, 
+                ROUND(gio_ngu_tb, 2) AS trung_binh_cung_tuoi, 
+                ROUND(do_lech_chuan_ngu, 4) AS do_lech_chuan,
+                ROUND((gio_ngu - gio_ngu_tb) / COALESCE(NULLIF(do_lech_chuan_ngu, 0), 1), 2) AS chi_so_z_score 
+            FROM statistical_sleep_table 
+            ORDER BY ABS((gio_ngu - gio_ngu_tb) / COALESCE(NULLIF(do_lech_chuan_ngu, 0), 1)) DESC
+            LIMIT 15
+        """).show()
+
     except Exception as e:
         print(f"Lỗi: {e}")
     finally:
