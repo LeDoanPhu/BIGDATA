@@ -279,6 +279,22 @@ def main():
             LIMIT 15
         """).show()
 
+        # --- CÂU 9 ---
+        print("\n--- BÁO CÁO 9: So sánh điểm toán giữa các học sinh có giờ học liền kề ---")
+        spark.sql("""
+            SELECT 
+                age AS tuoi, 
+                daily_study_hours AS gio_hoc, 
+                math_score AS diem_toan,
+                COALESCE(LAG(math_score, 1) OVER (PARTITION BY age ORDER BY daily_study_hours ASC), math_score) AS diem_ban_phia_truoc,
+                COALESCE(LEAD(math_score, 1) OVER (PARTITION BY age ORDER BY daily_study_hours ASC), math_score) AS diem_ban_phia_sau,
+                ROUND(math_score - COALESCE(LAG(math_score, 1) OVER (PARTITION BY age ORDER BY daily_study_hours ASC), math_score), 2) AS muc_thay_doi_diem
+            FROM student_stream 
+            WHERE age IN (17, 18) 
+            ORDER BY tuoi ASC, gio_hoc ASC 
+            LIMIT 15
+        """).show()
+
     except Exception as e:
         print(f"Lỗi: {e}")
     finally:
