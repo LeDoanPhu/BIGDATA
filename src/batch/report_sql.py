@@ -170,6 +170,30 @@ def main():
             SELECT * FROM ranked_students WHERE xep_hang_nhom <= 3
             ORDER BY ket_qua_hoc_tap ASC, gioi_tinh ASC, xep_hang_nhom ASC
         """).show()
+
+        # --- CÂU 4 ---
+        print("\n--- BÁO CÁO 4: Học sinh có hiệu suất điểm số cao nhất trên mỗi giờ học theo độ tuổi ---")
+        spark.sql("""
+            WITH efficiency_table AS (
+                SELECT 
+                    age AS tuoi, 
+                    gender AS gioi_tinh, 
+                    math_score AS diem_toan, 
+                    daily_study_hours AS gio_hoc_moi_ngay,
+                    ROUND(math_score / NULLIF(daily_study_hours, 0), 2) AS hieu_suat_diem_so,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY age 
+                        ORDER BY (math_score / NULLIF(daily_study_hours, 0)) DESC, attendance_rate DESC
+                    ) AS xep_hang_hieu_suat 
+                FROM student_stream
+            )
+            SELECT 
+                tuoi, gioi_tinh, diem_toan, gio_hoc_moi_ngay, hieu_suat_diem_so AS diem_tren_mot_gio_hoc 
+            FROM efficiency_table 
+            WHERE xep_hang_hieu_suat = 1
+            ORDER BY tuoi ASC
+        """).show()
+
     except Exception as e:
         print(f"Lỗi: {e}")
     finally:
