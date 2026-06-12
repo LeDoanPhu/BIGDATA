@@ -147,6 +147,29 @@ def main():
             GROUP BY nhom_thu_nhap 
             ORDER BY nhom_thu_nhap ASC
         """).show()
+
+        # --- CÂU 3 ---
+        print("\n--- BÁO CÁO 3: Top 3 học sinh điểm toán cao nhất theo giới tính và kết quả học tập ---")
+        spark.sql("""
+            WITH ranked_students AS (
+                SELECT 
+                    CASE 
+                        WHEN pass_fail LIKE '1%' OR pass_fail = 'pass' OR pass_fail = '0' THEN 'ĐẠT (PASS)'
+                        ELSE 'TRƯỢT (FAIL)'
+                    END AS ket_qua_hoc_tap, 
+                    INITCAP(gender) AS gioi_tinh, 
+                    age AS tuoi, 
+                    math_score AS diem_toan, 
+                    daily_study_hours AS gio_tu_hoc,
+                    DENSE_RANK() OVER (
+                        PARTITION BY pass_fail, gender 
+                        ORDER BY math_score DESC, daily_study_hours ASC, attendance_rate DESC
+                    ) AS xep_hang_nhom 
+                FROM student_stream
+            )
+            SELECT * FROM ranked_students WHERE xep_hang_nhom <= 3
+            ORDER BY ket_qua_hoc_tap ASC, gioi_tinh ASC, xep_hang_nhom ASC
+        """).show()
     except Exception as e:
         print(f"Lỗi: {e}")
     finally:
