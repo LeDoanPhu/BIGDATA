@@ -1,0 +1,1 @@
+{"class":"org.apache.spark.ml.feature.IndexToString","timestamp":1781365733731,"sparkVersion":"4.1.1","uid":"IndexToString_7fe22e697d42","paramMap":{"inputCol":"prediction","labels":["Fail","Pass"],"outputCol":"predicted_pass_fail"},"defaultParamMap":{"outputCol":"IndexToString_7fe22e697d42__output"}}

@@ -1,5 +1,4 @@
 import argparse
-import argparse
 import json
 import os
 import sys
@@ -36,13 +35,36 @@ LOCAL_DATA_PATH = Path(ROOT_DIR) / 'Data' / 'student_data.csv'
 REMOTE_HDFS_PATH = f"{HDFS_URL.rstrip('/')}/student_data.csv"
 
 NUMERIC_FIELDS = [
+    'age',
+    'parental_education_level',
     'family_income',
+    'daily_study_hours',
+    'attendance_rate',
     'sleep_hours',
     'stress_level',
-    'attendance_rate',
+    'motivation_score',
+    'internet_quality',
     'math_score',
     'reading_score',
     'writing_score',
+]
+
+CANONICAL_FIELDS = [
+    'gender',
+    'age',
+    'parental_education_level',
+    'family_income',
+    'daily_study_hours',
+    'attendance_rate',
+    'sleep_hours',
+    'stress_level',
+    'motivation_score',
+    'private_tutoring',
+    'internet_quality',
+    'math_score',
+    'reading_score',
+    'writing_score',
+    'pass_fail',
 ]
 
 
@@ -66,6 +88,14 @@ def cast_numeric_columns(df):
         if col_name in df.columns:
             df = df.withColumn(col_name, F.col(col_name).cast(T.DoubleType()))
     return df
+
+
+def select_canonical_columns(df):
+    available_columns = [col_name for col_name in CANONICAL_FIELDS if col_name in df.columns]
+    missing_columns = [col_name for col_name in CANONICAL_FIELDS if col_name not in df.columns]
+    if missing_columns:
+        print(f'Warning: missing expected columns: {missing_columns}')
+    return df.select(*available_columns)
 
 
 def fill_family_income(df):
@@ -123,7 +153,7 @@ def transform_data(df):
     if 'pass_fail' not in df.columns and 'final_result' in df.columns:
         df = df.withColumnRenamed('final_result', 'pass_fail')
 
-    return df
+    return select_canonical_columns(df)
 
 
 def create_producer(broker_url: str):

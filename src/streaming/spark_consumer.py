@@ -22,23 +22,23 @@ except ImportError:
 HDFS_OUTPUT_BASE = f"{HDFS_URL.rstrip('/')}/stream_output"
 HDFS_CHECKPOINT_BASE = f"{HDFS_URL.rstrip('/')}/checkpoints"
 CHECKPOINT_LOCATION = f"{HDFS_CHECKPOINT_BASE}/spark_consumer"
+KAFKA_STARTING_OFFSETS = "latest"
 STREAM_SCHEMA = T.StructType([
-    T.StructField('student_id', T.StringType(), True),
-    T.StructField('age', T.IntegerType(), True),
+    T.StructField('gender', T.StringType(), True),
+    T.StructField('age', T.DoubleType(), True),
+    T.StructField('parental_education_level', T.DoubleType(), True),
     T.StructField('family_income', T.DoubleType(), True),
-    T.StructField('parental_education_level', T.StringType(), True),
     T.StructField('daily_study_hours', T.DoubleType(), True),
     T.StructField('attendance_rate', T.DoubleType(), True),
     T.StructField('sleep_hours', T.DoubleType(), True),
     T.StructField('stress_level', T.DoubleType(), True),
     T.StructField('motivation_score', T.DoubleType(), True),
-    T.StructField('internet_quality', T.StringType(), True),
+    T.StructField('private_tutoring', T.BooleanType(), True),
+    T.StructField('internet_quality', T.DoubleType(), True),
     T.StructField('math_score', T.DoubleType(), True),
     T.StructField('reading_score', T.DoubleType(), True),
     T.StructField('writing_score', T.DoubleType(), True),
     T.StructField('pass_fail', T.StringType(), True),
-    T.StructField('final_result', T.StringType(), True),
-    T.StructField('source_generated_at', T.StringType(), True),
 ])
 
 NUMERIC_CLAMPING = [
@@ -155,30 +155,30 @@ def print_summary(df):
 
 def process_microbatch(batch_df, batch_id):
     if batch_df.isEmpty():
-        print(f'Batch {batch_id}: no records')
+        print(f'Batch {batch_id}: no records', flush=True)
         return
 
     converted = parse_kafka_value(batch_df)
     cleaned = transform_stream_batch(converted)
 
-    print(f'Batch {batch_id}: received {cleaned.count()} cleaned records')
+    print(f'Batch {batch_id}: received {cleaned.count()} cleaned records', flush=True)
     print_summary(cleaned)
 
-    output_path = f"{HDFS_OUTPUT_BASE}/batch_{batch_id}"
-    cleaned.write.mode('overwrite').parquet(output_path)
-    print(f'Batch {batch_id}: written cleaned data to {output_path}')
+    output_path = f"{HDFS_OUTPUT_BASE}"
+    cleaned.write.mode('append').parquet(output_path)
+    print(f'Batch {batch_id}: appended cleaned data to {output_path}', flush=True)
 
 
 def main():
     ensure_paths()
-    spark = create_spark_session(app_name='SparkKafkaConsumer')
+    spark = create_spark_session(app_name='SparkKafkaConsumer', include_kafka=True)
     spark.sparkContext.setLogLevel("WARN")
     kafka_df = (
         spark.readStream
              .format('kafka')
              .option('kafka.bootstrap.servers', KAFKA_BROKER)
              .option('subscribe', KAFKA_TOPIC)
-             .option('startingOffsets', 'earliest')
+             .option('startingOffsets', KAFKA_STARTING_OFFSETS)
              .load()
     )
 
@@ -190,7 +190,7 @@ def main():
                 .start()
     )
 
-    print('Spark consumer started. Listening to Kafka topic:', KAFKA_TOPIC)
+    print('Spark consumer started. Listening to Kafka topic:', KAFKA_TOPIC, flush=True)
     query.awaitTermination()
 
 
