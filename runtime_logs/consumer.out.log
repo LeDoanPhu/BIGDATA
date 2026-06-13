@@ -56,3 +56,4 @@ Batch 3: received 82151 cleaned records
 |max    |100.0             |100.0             |100.0            |
 +-------+------------------+------------------+-----------------+
 
+Batch 3: appended cleaned data to hdfs://100.109.78.104:9000/stream_output
