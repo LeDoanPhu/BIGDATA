@@ -1,141 +1,265 @@
-# 🚀 Distributed Big Data Pipeline: Batch & Simulated Real-time Analytics
+# 🚀 Distributed Big Data Pipeline
 
-![Hadoop](https://img.shields.io/badge/Apache%20Hadoop-3.4.3-yellow?style=for-the-badge&logo=apachehadoop)
-![Spark](https://img.shields.io/badge/Apache%20Spark-4.1.1-orange?style=for-the-badge&logo=apachespark)
-![Kafka](https://img.shields.io/badge/Apache%20Kafka-4.1.2-black?style=for-the-badge&logo=apachekafka)
-![Python](https://img.shields.io/badge/Python-3.12-blue?style=for-the-badge&logo=python)
+> Batch Processing • Streaming Analytics • Machine Learning
 
-📌 **Dự án được phát triển trong khuôn khổ Đồ án môn học Big Data** 📅 **Thời gian hoàn thành:** [06/2026]  
-👥 **Tác giả (Nhóm 5):** Lê Doãn Phú, Nguyễn Kiều Minh Trí, Nguyễn Khánh Hoàng  
+![Hadoop](https://img.shields.io/badge/Apache_Hadoop-3.4.3-yellow?style=for-the-badge\&logo=apachehadoop)
+![Spark](https://img.shields.io/badge/Apache_Spark-4.1.1-orange?style=for-the-badge\&logo=apachespark)
+![Kafka](https://img.shields.io/badge/Apache_Kafka-4.1.2-black?style=for-the-badge\&logo=apachekafka)
+![Python](https://img.shields.io/badge/Python-3.12-blue?style=for-the-badge\&logo=python)
 
----
-
-## 📌 Giới thiệu dự án (Project Overview)
-Dự án này xây dựng một hệ thống **Data Pipeline phân tán hoàn chỉnh từ đầu đến cuối (End-to-End)**, được thiết kế để lưu trữ, tiền xử lý và khai phá khối lượng lớn dữ liệu phân tán trên nền tảng Hadoop và Spark.
-
-Hệ thống tích hợp hai luồng xử lý song song mang tính ứng dụng thực tiễn cao:
-1. **Batch Processing (Xử lý theo Lô):** Xử lý khối lượng lớn dữ liệu tĩnh bằng PySpark SQL để làm sạch, chuẩn hóa cấu trúc (ETL Pipeline), lưu trữ tối ưu dưới dạng Parquet và phục vụ huấn luyện các mô hình Machine Learning dự đoán kết quả học tập.
-2. **Simulated Real-time Streaming (Xử lý Luồng giả lập):** Kịch bản Python Producer đọc file dữ liệu nguồn và truyền tải (stream) liên tục vào Apache Kafka theo từng giây. **Spark Structured Streaming** đóng vai trò Consumer lắng nghe Kafka, tính toán vi lô (micro-batch) và kết xuất trực tiếp xuống hệ thống tệp lưu trữ **HDFS**. Sau đó, cấu trúc **Spark SQL** được triển khai để quét thư mục luồng này, phân tích và kết xuất báo cáo động (Dynamic Analytics) trực tiếp trên màn hình console.
-
-> 💡 **Hạ tầng phân tán:** Hệ thống vận hành trên một **Cụm máy chủ phân tán (Distributed Cluster) gồm 3 Node vật lý độc lập** kết nối qua mạng riêng ảo (Tailscale VPN) và được điều phối tài nguyên chặt chẽ bởi Hadoop YARN.
+End-to-End Distributed Data Engineering Platform using **Hadoop • Spark • Kafka • Machine Learning**
 
 ---
 
-## 🏗️ Kiến trúc Hệ thống (Architecture Diagram)
+## 📌 About
+
+This project implements a complete **Distributed Big Data Pipeline** for processing and analyzing large-scale datasets.
+
+The system combines two processing approaches:
+
+### 🔹 Batch Processing
+
+* Distributed ETL using PySpark SQL
+* Data cleaning & transformation
+* Parquet optimization
+* Machine Learning preparation
+
+### 🔹 Simulated Real-time Streaming
+
+* Python Producer
+* Apache Kafka
+* Spark Structured Streaming
+* HDFS Sink
+* Dynamic analytics with Spark SQL
+
+Infrastructure runs on a **3-node Hadoop Cluster** connected through **Tailscale VPN** and managed by **YARN**.
+
+---
+
+## 📖 Table of Contents
+
+* [Architecture](#-architecture)
+* [Tech Stack](#-tech-stack)
+* [Project Structure](#-project-structure)
+* [Features](#-features)
+* [Quick Start](#-quick-start)
+* [Pipeline Flow](#-pipeline-flow)
+* [Future Improvements](#-future-improvements)
+* [Authors](#-authors)
+
+---
+
+## 🏗 Architecture
 
 ```mermaid
-graph LR
-    subgraph Data Sources
-        A1[Static CSV files]
-        A2[Python Script <br> Đọc CSV từng dòng]
-    end
+flowchart LR
 
-    subgraph Data Ingestion
-        B1[(HDFS Raw Zone)]
-        B2[Apache Kafka <br> Topic: student_stream]
-    end
+CSV[CSV Dataset]
 
-    subgraph Distributed Processing
-        C1[PySpark SQL / Batch ETL]
-        C2[Spark Structured Streaming <br> Consumer]
-        C3[Spark SQL <br> Dynamic Analytics]
-    end
+HDFS[HDFS Raw Storage]
 
-    subgraph Storage & Analytics
-        D1[(HDFS Clean Zone / Parquet)]
-        D2[(HDFS Stream Sink / Parquet)]
-        E1[Jupyter EDA & BI Reports]
-        E2[Machine Learning Models]
-        E3[Console Spark SQL Reports]
-    end
+ETL[PySpark ETL]
 
-    %% Luồng Batch
-    A1 --"Lưu trữ thô"--> B1
-    B1 --"Extract"--> C1
-    C1 --"Transform & Load"--> D1
-    
-    %% Luồng Streaming
-    A2 --"Bắn dữ liệu liên tục"--> B2
-    B2 --"Hút dữ liệu liên tục"--> C2
-    C2 --"Write Stream Sink"--> D2
-    D2 --"Quét & Nạp"--> C3
-    C3 --"Hiển thị báo cáo insight"--> E3
+PARQUET[Parquet Storage]
 
-    %% Phân tích & AI
-    D1 --> E1
-    D1 --> E2
+PRODUCER[Kafka Producer]
+
+KAFKA[Kafka Topic]
+
+STREAM[Spark Streaming]
+
+SINK[HDFS Stream Sink]
+
+SQL[Spark SQL]
+
+REPORT[Analytics Report]
+
+CSV --> HDFS
+HDFS --> ETL
+ETL --> PARQUET
+
+CSV --> PRODUCER
+PRODUCER --> KAFKA
+KAFKA --> STREAM
+STREAM --> SINK
+SINK --> SQL
+SQL --> REPORT
 ```
 
-## 🛠️ Công nghệ sử dụng (Tech Stack)
-* **Hạ tầng (Infrastructure):** Cụm 3 Node (1 Master, 2 Workers) liên kết qua Tailscale VPN.
-* **Lưu trữ phân tán (Storage):** Hadoop Distributed File System (HDFS).
-* **Điều phối tài nguyên (Resource Manager):** Hadoop YARN.
-* **Xử lý Dữ liệu Lô (Batch ETL):** Apache Spark Core, Spark SQL, PySpark.
-* **Xử lý Luồng (Real-time Streaming):** Apache Kafka & Spark Structured Streaming.
-* **Khám phá Dữ liệu & AI:** Jupyter Notebook, Pandas, Scikit-learn (ML).
+---
 
-## 📂 Cấu trúc thư mục (Directory Structure)
+## 🛠 Tech Stack
+
+| Layer            | Technology       |
+| ---------------- | ---------------- |
+| Infrastructure   | 3 Nodes Cluster  |
+| Storage          | Hadoop HDFS      |
+| Resource Manager | Hadoop YARN      |
+| Batch Processing | Apache Spark     |
+| Streaming        | Apache Kafka     |
+| Analytics        | Jupyter Notebook |
+| Machine Learning | Scikit-learn     |
+
+---
+
+## 📂 Project Structure
+
 ```text
-📦BIGDATA
- ┣ 📂data/               # Thư mục chứa sample data test cục bộ
- ┣ 📂notebooks/          # Chứa các file Jupyter (Initial EDA, Insight Reports)
- ┣ 📂src/                # MÃ NGUỒN CHÍNH CỦA HỆ THỐNG
- ┃ ┣ 📂batch/            # Nơi chứa luồng ETL
- ┃ ┃ ┣ 📄clean_data.py   # Làm sạch lô lớn
- ┃ ┃ ┗ 📄report_sql.py   # Viết SQL báo cáo tĩnh
- ┃ ┣ 📂config/           # Nơi chứa cấu hình
- ┃ ┃ ┗ 📄settings.py     # Chứa IP của HDFS và Kafka 
- ┃ ┣ 📂utils/            # Nơi chứa công cụ dùng chung
- ┃ ┃ ┗ 📄spark_session.py# Chứa hàm khởi tạo kết nối Spark
- ┃ ┣ 📂ml/               # Nơi chứa Machine Learning
- ┃ ┃ ┣ 📄train_model.py  # Dạy AI
- ┃ ┃ ┗ 📄predict.py      # Dùng AI dự đoán
- ┃ ┗ 📂streaming/        # Nơi chứa luồng Real-time giả lập
- ┃   ┣ 📄kafka_producer.py  # Đọc CSV ném vào Kafka từng giây
- ┃   ┗ 📄spark_consumer.py  # Spark hút data từ Kafka về xử lý trực tiếp
- ┣ 📜.gitignore          # Quy tắc bỏ qua file data lớn khi push Github
- ┣ 📜requirements.txt    # Danh sách thư viện Python
- ┗ 📜README.md
+BIGDATA
+│
+├── data/
+│
+├── notebooks/
+│
+├── src/
+│   ├── batch/
+│   │   ├── clean_data.py
+│   │   └── report_sql.py
+│   │
+│   ├── streaming/
+│   │   ├── kafka_producer.py
+│   │   └── spark_consumer.py
+│   │
+│   ├── ml/
+│   │   ├── train_model.py
+│   │   └── predict.py
+│   │
+│   ├── config/
+│   │   └── settings.py
+│   │
+│   └── utils/
+│       └── spark_session.py
+│
+├── requirements.txt
+├── README.md
+└── .gitignore
 ```
 
-## 🚀 Tính năng nổi bật (Key Features)
-1. **Khả năng chịu lỗi cao (Fault Tolerance):** Cấu hình `Replication = 3` trên HDFS đảm bảo dữ liệu an toàn tuyệt đối ngay cả khi 1-2 node trong cụm bị sập.
-2. **Xử lý song song (Data Locality):** Áp dụng YARN để phân chia công việc xử lý dữ liệu ngay tại máy chứa dữ liệu, tối ưu hóa tốc độ tính toán phân tán.
-3. **Automated ETL Pipeline:** Xây dựng luồng PySpark tự động trích xuất dữ liệu rác, làm sạch (Transform) và lưu trữ thành dạng Parquet.
-4. **Real-time Kafka Integration:** Đột phá với kịch bản giả lập Real-time Producer bắn dữ liệu liên tục vào Kafka, kết hợp với Spark Consumer để tính toán và phát hiện thông tin tức thời.
+---
 
-## 💻 Hướng dẫn chạy dự án (How to run)
+## ✨ Features
 
-**1. Khởi động Cụm Hadoop & Kafka (Trên máy Master):**
+### Batch Layer
+
+* Automated ETL Pipeline
+* Distributed Processing
+* Data Cleaning
+* Machine Learning Integration
+
+### Streaming Layer
+
+* Kafka-based Data Streaming
+* Spark Structured Streaming
+* Dynamic Analytics
+
+### Infrastructure
+
+* Fault Tolerance
+* Data Replication
+* Resource Scheduling
+
+---
+
+## 🚀 Quick Start
+
+### 1. Start Hadoop Cluster
+
 ```bash
 start-dfs.cmd
 start-yarn.cmd
-# Bật Kafka (Zookeeper & Server)
 ```
 
-**2. Tham gia Cụm (Trên máy Worker):**
+Start Kafka:
+
+```bash
+zookeeper-server-start
+kafka-server-start
+```
+
+---
+
+### 2. Join Worker Nodes
+
 ```bash
 hdfs datanode
 yarn nodemanager
 ```
 
-**3. Chạy luồng Batch (Làm sạch Data & Học máy):**
+---
+
+### 3. Execute Batch Pipeline
+
 ```bash
 spark-submit src/batch/clean_data.py
+
 spark-submit src/ml/train_model.py
 ```
 
-**4. Chạy luồng Streaming (Giả lập Real-time):**
-```bash
-# Bật Terminal 1: Khởi động Spark Consumer để chờ hút dữ liệu
-spark-submit src/streaming/spark_consumer.py
+---
 
-# Bật Terminal 2: Kích hoạt Máy bắn bóng (Producer) bắn file CSV
+### 4. Execute Streaming Pipeline
+
+Consumer:
+
+```bash
+spark-submit src/streaming/spark_consumer.py
+```
+
+Producer:
+
+```bash
 python src/streaming/kafka_producer.py
 ```
 
 ---
-*Dự án được phát triển trong khuôn khổ Đồ án môn học Big Data - [06/2026].*
-*Tác giả: Nhóm 5 - Lê Doãn Phú,
-                   Nguyễn Kiều Minh Trí,
-                   Nguyễn Khánh Hoàng*
+
+## 📊 Pipeline Flow
+
+```text
+CSV
+ ↓
+HDFS
+ ↓
+Spark ETL
+ ↓
+Parquet
+ ↓
+Machine Learning
+
+
+CSV
+ ↓
+Kafka
+ ↓
+Spark Streaming
+ ↓
+HDFS
+ ↓
+Spark SQL
+ ↓
+Analytics
+```
+
+---
+
+## 🎯 Future Improvements
+
+* Docker Deployment
+* Kubernetes Integration
+* Airflow Scheduling
+* Dashboard Monitoring
+* Real-time Visualization
+
+---
+
+## 👨‍💻 Authors
+
+| Member               | Responsibility      |
+| -------------------- | ------------------- |
+| Lê Doãn Phú          | Data Engineering    |
+| Nguyễn Kiều Minh Trí | System Architecture |
+| Nguyễn Khánh Hoàng   | Streaming & ML      |
+
+---
+
+⭐ Big Data Project • 2026
