@@ -5,14 +5,21 @@
 ![Kafka](https://img.shields.io/badge/Apache%20Kafka-4.1.2-black?style=for-the-badge&logo=apachekafka)
 ![Python](https://img.shields.io/badge/Python-3.12-blue?style=for-the-badge&logo=python)
 
+📌 **Dự án được phát triển trong khuôn khổ Đồ án môn học Big Data** 📅 **Thời gian hoàn thành:** [06/2026]  
+👥 **Tác giả (Nhóm 5):** Lê Doãn Phú, Nguyễn Kiều Minh Trí, Nguyễn Khánh Hoàng  
+
+---
+
 ## 📌 Giới thiệu dự án (Project Overview)
-Dự án này là một hệ thống **Data Pipeline phân tán** hoàn chỉnh từ đầu đến cuối (End-to-End), được thiết kế để lưu trữ và xử lý khối lượng lớn dữ liệu phân tán trên HDFS. 
+Dự án này xây dựng một hệ thống **Data Pipeline phân tán hoàn chỉnh từ đầu đến cuối (End-to-End)**, được thiết kế để lưu trữ, tiền xử lý và khai phá khối lượng lớn dữ liệu phân tán trên nền tảng Hadoop và Spark.
 
-Hệ thống được thiết kế với 2 luồng xử lý song song mang tính ứng dụng thực tế cao:
-1. **Batch Processing (Xử lý theo Lô):** Xử lý lượng dữ liệu khổng lồ tĩnh bằng PySpark SQL để làm sạch (ETL Pipeline) và đẩy vào huấn luyện Machine Learning.
-2. **Simulated Real-time Streaming (Xử lý Thời gian thực giả lập):** Áp dụng kỹ thuật dùng kịch bản **Python Producer** đọc file CSV tĩnh và "bắn" từng dòng dữ liệu vào **Apache Kafka** liên tục từng giây. **Spark Streaming** sẽ đóng vai trò Consumer lắng nghe Kafka và tính toán ngay lập tức, biến dữ liệu tĩnh thành một luồng dữ liệu sống động y như trong các tập đoàn lớn.
+Hệ thống tích hợp hai luồng xử lý song song mang tính ứng dụng thực tiễn cao:
+1. **Batch Processing (Xử lý theo Lô):** Xử lý khối lượng lớn dữ liệu tĩnh bằng PySpark SQL để làm sạch, chuẩn hóa cấu trúc (ETL Pipeline), lưu trữ tối ưu dưới dạng Parquet và phục vụ huấn luyện các mô hình Machine Learning dự đoán kết quả học tập.
+2. **Simulated Real-time Streaming (Xử lý Luồng giả lập):** Kịch bản Python Producer đọc file dữ liệu nguồn và truyền tải (stream) liên tục vào Apache Kafka theo từng giây. **Spark Structured Streaming** đóng vai trò Consumer lắng nghe Kafka, tính toán vi lô (micro-batch) và kết xuất trực tiếp xuống hệ thống tệp lưu trữ **HDFS**. Sau đó, cấu trúc **Spark SQL** được triển khai để quét thư mục luồng này, phân tích và kết xuất báo cáo động (Dynamic Analytics) trực tiếp trên màn hình console.
 
-Tất cả được vận hành trên một **Cụm máy chủ (Distributed Cluster)** gồm 3 máy tính độc lập liên kết qua mạng riêng ảo (Tailscale VPN) và được quản lý tài nguyên chặt chẽ bởi YARN.
+> 💡 **Hạ tầng phân tán:** Hệ thống vận hành trên một **Cụm máy chủ phân tán (Distributed Cluster) gồm 3 Node vật lý độc lập** kết nối qua mạng riêng ảo (Tailscale VPN) và được điều phối tài nguyên chặt chẽ bởi Hadoop YARN.
+
+---
 
 ## 🏗️ Kiến trúc Hệ thống (Architecture Diagram)
 
@@ -30,14 +37,16 @@ graph LR
 
     subgraph Distributed Processing
         C1[PySpark SQL / Batch ETL]
-        C2[Spark Streaming <br> Consumer]
+        C2[Spark Structured Streaming <br> Consumer]
+        C3[Spark SQL <br> Dynamic Analytics]
     end
 
     subgraph Storage & Analytics
-        D1[(HDFS Clean Zone)]
+        D1[(HDFS Clean Zone / Parquet)]
+        D2[(HDFS Stream Sink / Parquet)]
         E1[Jupyter EDA & BI Reports]
         E2[Machine Learning Models]
-        E3[Real-time Console / Dashboard]
+        E3[Console Spark SQL Reports]
     end
 
     %% Luồng Batch
@@ -46,10 +55,12 @@ graph LR
     C1 --"Transform & Load"--> D1
     
     %% Luồng Streaming
-    A2 --"Bắn data từng giây (Producer)"--> B2
-    B2 --"Hút data liên tục"--> C2
-    C2 --"Xử lý trực tiếp"--> E3
-    
+    A2 --"Bắn dữ liệu liên tục"--> B2
+    B2 --"Hút dữ liệu liên tục"--> C2
+    C2 --"Write Stream Sink"--> D2
+    D2 --"Quét & Nạp"--> C3
+    C3 --"Hiển thị báo cáo insight"--> E3
+
     %% Phân tích & AI
     D1 --> E1
     D1 --> E2
