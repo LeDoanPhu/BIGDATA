@@ -49,3 +49,192 @@ To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLeve
 26/06/14 00:45:14 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000 milliseconds, but spent 1277 milliseconds
 26/06/14 00:45:16 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000 milliseconds, but spent 1833 milliseconds
 26/06/14 01:02:25 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000 milliseconds, but spent 2288 milliseconds
+26/06/14 01:05:32 WARN NetworkClient: [AdminClient clientId=adminclient-1] Connection to node 1 (/100.109.78.104:9092) could not be established. Node may not be available.
+26/06/14 01:05:53 WARN NetworkClient: [AdminClient clientId=adminclient-1] Connection to node 1 (/100.109.78.104:9092) could not be established. Node may not be available.
+26/06/14 01:06:02 WARN KafkaOffsetReaderAdmin: Error in attempt 1 getting Kafka offsets: 
+java.util.concurrent.ExecutionException: org.apache.kafka.common.errors.TimeoutException: Timed out waiting to send the call. Call: listNodes
+	at java.base/java.util.concurrent.CompletableFuture.reportGet(CompletableFuture.java:396)
+	at java.base/java.util.concurrent.CompletableFuture.get(CompletableFuture.java:2073)
+	at org.apache.kafka.common.internals.KafkaFutureImpl.get(KafkaFutureImpl.java:165)
+	at org.apache.spark.sql.kafka010.ConsumerStrategy.retrieveAllPartitions(ConsumerStrategy.scala:65)
+	at org.apache.spark.sql.kafka010.ConsumerStrategy.retrieveAllPartitions$(ConsumerStrategy.scala:64)
+	at org.apache.spark.sql.kafka010.SubscribeStrategy.retrieveAllPartitions(ConsumerStrategy.scala:102)
+	at org.apache.spark.sql.kafka010.SubscribeStrategy.assignedTopicPartitions(ConsumerStrategy.scala:113)
+	at org.apache.spark.sql.kafka010.KafkaOffsetReaderAdmin.$anonfun$partitionsAssignedToAdmin$1(KafkaOffsetReaderAdmin.scala:447)
+	at org.apache.spark.sql.kafka010.KafkaOffsetReaderAdmin.withRetries(KafkaOffsetReaderAdmin.scala:466)
+	at org.apache.spark.sql.kafka010.KafkaOffsetReaderAdmin.partitionsAssignedToAdmin(KafkaOffsetReaderAdmin.scala:446)
+	at org.apache.spark.sql.kafka010.KafkaOffsetReaderAdmin.fetchLatestOffsets(KafkaOffsetReaderAdmin.scala:302)
+	at org.apache.spark.sql.kafka010.KafkaMicroBatchStream.latestOffset(KafkaMicroBatchStream.scala:149)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.$anonfun$constructNextBatch$4(MicroBatchExecution.scala:773)
+	at org.apache.spark.sql.execution.streaming.runtime.ProgressContext.reportTimeTaken(ProgressReporter.scala:200)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.$anonfun$constructNextBatch$2(MicroBatchExecution.scala:772)
+	at scala.collection.immutable.List.map(List.scala:236)
+	at scala.collection.immutable.List.map(List.scala:79)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.$anonfun$constructNextBatch$1(MicroBatchExecution.scala:761)
+	at scala.runtime.java8.JFunction0$mcZ$sp.apply(JFunction0$mcZ$sp.scala:17)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.withProgressLocked(MicroBatchExecution.scala:1335)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.constructNextBatch(MicroBatchExecution.scala:757)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.$anonfun$executeOneBatch$2(MicroBatchExecution.scala:492)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+	at org.apache.spark.sql.execution.streaming.runtime.ProgressContext.reportTimeTaken(ProgressReporter.scala:200)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.executeOneBatch(MicroBatchExecution.scala:481)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.$anonfun$runActivatedStream$1(MicroBatchExecution.scala:461)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.$anonfun$runActivatedStream$1$adapted(MicroBatchExecution.scala:461)
+	at org.apache.spark.sql.execution.streaming.runtime.TriggerExecutor.runOneBatch(TriggerExecutor.scala:40)
+	at org.apache.spark.sql.execution.streaming.runtime.TriggerExecutor.runOneBatch$(TriggerExecutor.scala:38)
+	at org.apache.spark.sql.execution.streaming.runtime.ProcessingTimeExecutor.runOneBatch(TriggerExecutor.scala:71)
+	at org.apache.spark.sql.execution.streaming.runtime.ProcessingTimeExecutor.execute(TriggerExecutor.scala:83)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.runActivatedStream(MicroBatchExecution.scala:461)
+	at org.apache.spark.sql.execution.streaming.runtime.StreamExecution.$anonfun$runStream$1(StreamExecution.scala:347)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+	at org.apache.spark.sql.SparkSession.withActive(SparkSession.scala:804)
+	at org.apache.spark.sql.execution.streaming.runtime.StreamExecution.org$apache$spark$sql$execution$streaming$runtime$StreamExecution$$runStream(StreamExecution.scala:307)
+	at org.apache.spark.sql.execution.streaming.runtime.StreamExecution$$anon$1.run(StreamExecution.scala:230)
+Caused by: org.apache.kafka.common.errors.TimeoutException: Timed out waiting to send the call. Call: listNodes
+26/06/14 01:06:34 WARN NetworkClient: [AdminClient clientId=adminclient-2] Connection to node -1 (/100.109.78.104:9092) could not be established. Node may not be available.
+26/06/14 01:06:55 WARN NetworkClient: [AdminClient clientId=adminclient-2] Connection to node -1 (/100.109.78.104:9092) could not be established. Node may not be available.
+26/06/14 01:07:03 WARN KafkaOffsetReaderAdmin: Error in attempt 2 getting Kafka offsets: 
+java.util.concurrent.ExecutionException: org.apache.kafka.common.errors.TimeoutException: Timed out waiting for a node assignment. Call: listNodes
+	at java.base/java.util.concurrent.CompletableFuture.reportGet(CompletableFuture.java:396)
+	at java.base/java.util.concurrent.CompletableFuture.get(CompletableFuture.java:2073)
+	at org.apache.kafka.common.internals.KafkaFutureImpl.get(KafkaFutureImpl.java:165)
+	at org.apache.spark.sql.kafka010.ConsumerStrategy.retrieveAllPartitions(ConsumerStrategy.scala:65)
+	at org.apache.spark.sql.kafka010.ConsumerStrategy.retrieveAllPartitions$(ConsumerStrategy.scala:64)
+	at org.apache.spark.sql.kafka010.SubscribeStrategy.retrieveAllPartitions(ConsumerStrategy.scala:102)
+	at org.apache.spark.sql.kafka010.SubscribeStrategy.assignedTopicPartitions(ConsumerStrategy.scala:113)
+	at org.apache.spark.sql.kafka010.KafkaOffsetReaderAdmin.$anonfun$partitionsAssignedToAdmin$1(KafkaOffsetReaderAdmin.scala:447)
+	at org.apache.spark.sql.kafka010.KafkaOffsetReaderAdmin.withRetries(KafkaOffsetReaderAdmin.scala:466)
+	at org.apache.spark.sql.kafka010.KafkaOffsetReaderAdmin.partitionsAssignedToAdmin(KafkaOffsetReaderAdmin.scala:446)
+	at org.apache.spark.sql.kafka010.KafkaOffsetReaderAdmin.fetchLatestOffsets(KafkaOffsetReaderAdmin.scala:302)
+	at org.apache.spark.sql.kafka010.KafkaMicroBatchStream.latestOffset(KafkaMicroBatchStream.scala:149)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.$anonfun$constructNextBatch$4(MicroBatchExecution.scala:773)
+	at org.apache.spark.sql.execution.streaming.runtime.ProgressContext.reportTimeTaken(ProgressReporter.scala:200)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.$anonfun$constructNextBatch$2(MicroBatchExecution.scala:772)
+	at scala.collection.immutable.List.map(List.scala:236)
+	at scala.collection.immutable.List.map(List.scala:79)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.$anonfun$constructNextBatch$1(MicroBatchExecution.scala:761)
+	at scala.runtime.java8.JFunction0$mcZ$sp.apply(JFunction0$mcZ$sp.scala:17)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.withProgressLocked(MicroBatchExecution.scala:1335)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.constructNextBatch(MicroBatchExecution.scala:757)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.$anonfun$executeOneBatch$2(MicroBatchExecution.scala:492)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+	at org.apache.spark.sql.execution.streaming.runtime.ProgressContext.reportTimeTaken(ProgressReporter.scala:200)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.executeOneBatch(MicroBatchExecution.scala:481)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.$anonfun$runActivatedStream$1(MicroBatchExecution.scala:461)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.$anonfun$runActivatedStream$1$adapted(MicroBatchExecution.scala:461)
+	at org.apache.spark.sql.execution.streaming.runtime.TriggerExecutor.runOneBatch(TriggerExecutor.scala:40)
+	at org.apache.spark.sql.execution.streaming.runtime.TriggerExecutor.runOneBatch$(TriggerExecutor.scala:38)
+	at org.apache.spark.sql.execution.streaming.runtime.ProcessingTimeExecutor.runOneBatch(TriggerExecutor.scala:71)
+	at org.apache.spark.sql.execution.streaming.runtime.ProcessingTimeExecutor.execute(TriggerExecutor.scala:83)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.runActivatedStream(MicroBatchExecution.scala:461)
+	at org.apache.spark.sql.execution.streaming.runtime.StreamExecution.$anonfun$runStream$1(StreamExecution.scala:347)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+	at org.apache.spark.sql.SparkSession.withActive(SparkSession.scala:804)
+	at org.apache.spark.sql.execution.streaming.runtime.StreamExecution.org$apache$spark$sql$execution$streaming$runtime$StreamExecution$$runStream(StreamExecution.scala:307)
+	at org.apache.spark.sql.execution.streaming.runtime.StreamExecution$$anon$1.run(StreamExecution.scala:230)
+Caused by: org.apache.kafka.common.errors.TimeoutException: Timed out waiting for a node assignment. Call: listNodes
+26/06/14 01:07:55 WARN NetworkClient: [AdminClient clientId=adminclient-3] Connection to node -1 (/100.109.78.104:9092) could not be established. Node may not be available.
+26/06/14 01:08:04 WARN KafkaOffsetReaderAdmin: Error in attempt 3 getting Kafka offsets: 
+java.util.concurrent.ExecutionException: org.apache.kafka.common.errors.TimeoutException: Timed out waiting for a node assignment. Call: listNodes
+	at java.base/java.util.concurrent.CompletableFuture.reportGet(CompletableFuture.java:396)
+	at java.base/java.util.concurrent.CompletableFuture.get(CompletableFuture.java:2073)
+	at org.apache.kafka.common.internals.KafkaFutureImpl.get(KafkaFutureImpl.java:165)
+	at org.apache.spark.sql.kafka010.ConsumerStrategy.retrieveAllPartitions(ConsumerStrategy.scala:65)
+	at org.apache.spark.sql.kafka010.ConsumerStrategy.retrieveAllPartitions$(ConsumerStrategy.scala:64)
+	at org.apache.spark.sql.kafka010.SubscribeStrategy.retrieveAllPartitions(ConsumerStrategy.scala:102)
+	at org.apache.spark.sql.kafka010.SubscribeStrategy.assignedTopicPartitions(ConsumerStrategy.scala:113)
+	at org.apache.spark.sql.kafka010.KafkaOffsetReaderAdmin.$anonfun$partitionsAssignedToAdmin$1(KafkaOffsetReaderAdmin.scala:447)
+	at org.apache.spark.sql.kafka010.KafkaOffsetReaderAdmin.withRetries(KafkaOffsetReaderAdmin.scala:466)
+	at org.apache.spark.sql.kafka010.KafkaOffsetReaderAdmin.partitionsAssignedToAdmin(KafkaOffsetReaderAdmin.scala:446)
+	at org.apache.spark.sql.kafka010.KafkaOffsetReaderAdmin.fetchLatestOffsets(KafkaOffsetReaderAdmin.scala:302)
+	at org.apache.spark.sql.kafka010.KafkaMicroBatchStream.latestOffset(KafkaMicroBatchStream.scala:149)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.$anonfun$constructNextBatch$4(MicroBatchExecution.scala:773)
+	at org.apache.spark.sql.execution.streaming.runtime.ProgressContext.reportTimeTaken(ProgressReporter.scala:200)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.$anonfun$constructNextBatch$2(MicroBatchExecution.scala:772)
+	at scala.collection.immutable.List.map(List.scala:236)
+	at scala.collection.immutable.List.map(List.scala:79)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.$anonfun$constructNextBatch$1(MicroBatchExecution.scala:761)
+	at scala.runtime.java8.JFunction0$mcZ$sp.apply(JFunction0$mcZ$sp.scala:17)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.withProgressLocked(MicroBatchExecution.scala:1335)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.constructNextBatch(MicroBatchExecution.scala:757)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.$anonfun$executeOneBatch$2(MicroBatchExecution.scala:492)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+	at org.apache.spark.sql.execution.streaming.runtime.ProgressContext.reportTimeTaken(ProgressReporter.scala:200)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.executeOneBatch(MicroBatchExecution.scala:481)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.$anonfun$runActivatedStream$1(MicroBatchExecution.scala:461)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.$anonfun$runActivatedStream$1$adapted(MicroBatchExecution.scala:461)
+	at org.apache.spark.sql.execution.streaming.runtime.TriggerExecutor.runOneBatch(TriggerExecutor.scala:40)
+	at org.apache.spark.sql.execution.streaming.runtime.TriggerExecutor.runOneBatch$(TriggerExecutor.scala:38)
+	at org.apache.spark.sql.execution.streaming.runtime.ProcessingTimeExecutor.runOneBatch(TriggerExecutor.scala:71)
+	at org.apache.spark.sql.execution.streaming.runtime.ProcessingTimeExecutor.execute(TriggerExecutor.scala:83)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.runActivatedStream(MicroBatchExecution.scala:461)
+	at org.apache.spark.sql.execution.streaming.runtime.StreamExecution.$anonfun$runStream$1(StreamExecution.scala:347)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+	at org.apache.spark.sql.SparkSession.withActive(SparkSession.scala:804)
+	at org.apache.spark.sql.execution.streaming.runtime.StreamExecution.org$apache$spark$sql$execution$streaming$runtime$StreamExecution$$runStream(StreamExecution.scala:307)
+	at org.apache.spark.sql.execution.streaming.runtime.StreamExecution$$anon$1.run(StreamExecution.scala:230)
+Caused by: org.apache.kafka.common.errors.TimeoutException: Timed out waiting for a node assignment. Call: listNodes
+26/06/14 01:08:05 ERROR MicroBatchExecution: Query [id = 5cf7d75c-22f4-4064-8bc6-e88b99c3da1a, runId = bfde04b4-2912-4dcd-83d2-016b3a3bbe5d] terminated with error
+java.util.concurrent.ExecutionException: org.apache.kafka.common.errors.TimeoutException: Timed out waiting for a node assignment. Call: listNodes
+	at java.base/java.util.concurrent.CompletableFuture.reportGet(CompletableFuture.java:396)
+	at java.base/java.util.concurrent.CompletableFuture.get(CompletableFuture.java:2073)
+	at org.apache.kafka.common.internals.KafkaFutureImpl.get(KafkaFutureImpl.java:165)
+	at org.apache.spark.sql.kafka010.ConsumerStrategy.retrieveAllPartitions(ConsumerStrategy.scala:65)
+	at org.apache.spark.sql.kafka010.ConsumerStrategy.retrieveAllPartitions$(ConsumerStrategy.scala:64)
+	at org.apache.spark.sql.kafka010.SubscribeStrategy.retrieveAllPartitions(ConsumerStrategy.scala:102)
+	at org.apache.spark.sql.kafka010.SubscribeStrategy.assignedTopicPartitions(ConsumerStrategy.scala:113)
+	at org.apache.spark.sql.kafka010.KafkaOffsetReaderAdmin.$anonfun$partitionsAssignedToAdmin$1(KafkaOffsetReaderAdmin.scala:447)
+	at org.apache.spark.sql.kafka010.KafkaOffsetReaderAdmin.withRetries(KafkaOffsetReaderAdmin.scala:466)
+	at org.apache.spark.sql.kafka010.KafkaOffsetReaderAdmin.partitionsAssignedToAdmin(KafkaOffsetReaderAdmin.scala:446)
+	at org.apache.spark.sql.kafka010.KafkaOffsetReaderAdmin.fetchLatestOffsets(KafkaOffsetReaderAdmin.scala:302)
+	at org.apache.spark.sql.kafka010.KafkaMicroBatchStream.latestOffset(KafkaMicroBatchStream.scala:149)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.$anonfun$constructNextBatch$4(MicroBatchExecution.scala:773)
+	at org.apache.spark.sql.execution.streaming.runtime.ProgressContext.reportTimeTaken(ProgressReporter.scala:200)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.$anonfun$constructNextBatch$2(MicroBatchExecution.scala:772)
+	at scala.collection.immutable.List.map(List.scala:236)
+	at scala.collection.immutable.List.map(List.scala:79)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.$anonfun$constructNextBatch$1(MicroBatchExecution.scala:761)
+	at scala.runtime.java8.JFunction0$mcZ$sp.apply(JFunction0$mcZ$sp.scala:17)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.withProgressLocked(MicroBatchExecution.scala:1335)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.constructNextBatch(MicroBatchExecution.scala:757)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.$anonfun$executeOneBatch$2(MicroBatchExecution.scala:492)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+	at org.apache.spark.sql.execution.streaming.runtime.ProgressContext.reportTimeTaken(ProgressReporter.scala:200)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.executeOneBatch(MicroBatchExecution.scala:481)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.$anonfun$runActivatedStream$1(MicroBatchExecution.scala:461)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.$anonfun$runActivatedStream$1$adapted(MicroBatchExecution.scala:461)
+	at org.apache.spark.sql.execution.streaming.runtime.TriggerExecutor.runOneBatch(TriggerExecutor.scala:40)
+	at org.apache.spark.sql.execution.streaming.runtime.TriggerExecutor.runOneBatch$(TriggerExecutor.scala:38)
+	at org.apache.spark.sql.execution.streaming.runtime.ProcessingTimeExecutor.runOneBatch(TriggerExecutor.scala:71)
+	at org.apache.spark.sql.execution.streaming.runtime.ProcessingTimeExecutor.execute(TriggerExecutor.scala:83)
+	at org.apache.spark.sql.execution.streaming.runtime.MicroBatchExecution.runActivatedStream(MicroBatchExecution.scala:461)
+	at org.apache.spark.sql.execution.streaming.runtime.StreamExecution.$anonfun$runStream$1(StreamExecution.scala:347)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+	at org.apache.spark.sql.SparkSession.withActive(SparkSession.scala:804)
+	at org.apache.spark.sql.execution.streaming.runtime.StreamExecution.org$apache$spark$sql$execution$streaming$runtime$StreamExecution$$runStream(StreamExecution.scala:307)
+	at org.apache.spark.sql.execution.streaming.runtime.StreamExecution$$anon$1.run(StreamExecution.scala:230)
+Caused by: org.apache.kafka.common.errors.TimeoutException: Timed out waiting for a node assignment. Call: listNodes
+Traceback (most recent call last):
+  File "D:\Final BigData\BIGDATA\src\streaming\spark_consumer.py", line 198, in <module>
+    main()
+  File "D:\Final BigData\BIGDATA\src\streaming\spark_consumer.py", line 194, in main
+    query.awaitTermination()
+  File "C:\java\spark-4.1.1-bin-hadoop3\python\pyspark\sql\streaming\query.py", line 225, in awaitTermination
+    return self._jsq.awaitTermination()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\java\spark-4.1.1-bin-hadoop3\python\lib\py4j-0.10.9.9-src.zip\py4j\java_gateway.py", line 1362, in __call__
+  File "C:\java\spark-4.1.1-bin-hadoop3\python\pyspark\errors\exceptions\captured.py", line 269, in deco
+    raise converted from None
+pyspark.errors.exceptions.captured.StreamingQueryException: [STREAM_FAILED] Query [id = 5cf7d75c-22f4-4064-8bc6-e88b99c3da1a, runId = bfde04b4-2912-4dcd-83d2-016b3a3bbe5d] terminated with exception: org.apache.kafka.common.errors.TimeoutException: Timed out waiting for a node assignment. Call: listNodes SQLSTATE: XXKST
+=== Streaming Query ===
+Identifier: [id = 5cf7d75c-22f4-4064-8bc6-e88b99c3da1a, runId = bfde04b4-2912-4dcd-83d2-016b3a3bbe5d]
+Current Committed Offsets: {KafkaV2[Subscribe[student_stream]]: {"student_stream":{"0":200000}}}
+Current Available Offsets: {KafkaV2[Subscribe[student_stream]]: {"student_stream":{"0":200000}}}
+
+Current State: ACTIVE
+Thread State: RUNNABLE
+
+Logical Plan:
+~WriteToMicroBatchDataSourceV1 ForeachBatchSink, 5cf7d75c-22f4-4064-8bc6-e88b99c3da1a, [checkpointLocation=hdfs://100.109.78.104:9000/checkpoints/spark_consumer], Append
++- ~StreamingDataSourceV2ScanRelation[key#7, value#8, topic#9, partition#10, offset#11L, timestamp#12, timestampType#13] KafkaTable
+

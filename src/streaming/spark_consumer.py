@@ -48,6 +48,7 @@ NUMERIC_CLAMPING = [
     ('reading_score', 0.0, 100.0),
     ('writing_score', 0.0, 100.0),
 ]
+DEDUP_EXCLUDE_COLUMNS = {'kafka_received_at', 'source_generated_at'}
 
 
 def ensure_paths():
@@ -109,32 +110,70 @@ def fill_family_income(df):
     return df.drop('median_income')
 
 
-def fill_group_mean(df, target_col):
-    if target_col not in df.columns or 'pass_fail' not in df.columns:
+def fill_sleep_hours_by_age(df):
+    if 'sleep_hours' not in df.columns or 'age' not in df.columns:
         return df
 
-    mean_by_pass = (
-        df.groupBy('pass_fail')
-          .agg(F.avg(F.col(target_col)).alias(f'{target_col}_mean'))
+    median_by_age = (
+        df.filter(F.col('sleep_hours').isNotNull())
+          .groupBy('age')
+          .agg(F.expr('percentile_approx(sleep_hours, 0.5)').alias('median_sleep_hours'))
     )
-    df = df.join(mean_by_pass, on='pass_fail', how='left')
+    df = df.join(median_by_age, on='age', how='left')
     df = df.withColumn(
-        target_col,
-        F.when(F.col(target_col).isNull(), F.col(f'{target_col}_mean')).otherwise(F.col(target_col))
+        'sleep_hours',
+        F.when(F.col('sleep_hours').isNull(), F.col('median_sleep_hours')).otherwise(F.col('sleep_hours'))
     )
-    global_mean = df.select(F.avg(F.col(target_col)).alias('global_mean')).first()['global_mean']
-    if global_mean is not None:
-        df = df.na.fill({target_col: float(global_mean)})
-    return df.drop(f'{target_col}_mean')
+    global_median = df.select(F.expr('percentile_approx(sleep_hours, 0.5)').alias('global_median')).first()['global_median']
+    if global_median is not None:
+        df = df.na.fill({'sleep_hours': float(global_median)})
+    return df.drop('median_sleep_hours')
+
+
+def fill_stress_level_by_motivation_score(df):
+    if 'stress_level' not in df.columns or 'motivation_score' not in df.columns:
+        return df
+
+    df = df.withColumn(
+        '_motivation_band',
+        F.when(F.col('motivation_score').isNull(), F.lit('missing'))
+         .when(F.col('motivation_score') <= 20, F.lit('0-20'))
+         .when(F.col('motivation_score') <= 40, F.lit('21-40'))
+         .when(F.col('motivation_score') <= 60, F.lit('41-60'))
+         .when(F.col('motivation_score') <= 80, F.lit('61-80'))
+         .otherwise(F.lit('81-100'))
+    )
+
+    median_by_motivation = (
+        df.filter(F.col('stress_level').isNotNull())
+          .groupBy('_motivation_band')
+          .agg(F.expr('percentile_approx(stress_level, 0.5)').alias('median_stress_level'))
+    )
+    df = df.join(median_by_motivation, on='_motivation_band', how='left')
+    df = df.withColumn(
+        'stress_level',
+        F.when(F.col('stress_level').isNull(), F.col('median_stress_level')).otherwise(F.col('stress_level'))
+    )
+    global_median = df.select(F.expr('percentile_approx(stress_level, 0.5)').alias('global_median')).first()['global_median']
+    if global_median is not None:
+        df = df.na.fill({'stress_level': float(global_median)})
+    return df.drop('_motivation_band', 'median_stress_level')
+
+
+def drop_business_duplicates(df):
+    dedup_columns = [column for column in df.columns if column not in DEDUP_EXCLUDE_COLUMNS]
+    if not dedup_columns:
+        return df.dropDuplicates()
+    return df.dropDuplicates(dedup_columns)
 
 
 def transform_stream_batch(df):
-    df = df.dropDuplicates()
+    df = drop_business_duplicates(df)
     df = normalize_attendance_rate(df)
     df = clamp_numeric_values(df)
     df = fill_family_income(df)
-    df = fill_group_mean(df, 'sleep_hours')
-    df = fill_group_mean(df, 'stress_level')
+    df = fill_sleep_hours_by_age(df)
+    df = fill_stress_level_by_motivation_score(df)
 
     if 'pass_fail' not in df.columns and 'final_result' in df.columns:
         df = df.withColumnRenamed('final_result', 'pass_fail')

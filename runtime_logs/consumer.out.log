@@ -57,3 +57,6 @@ Batch 3: received 82151 cleaned records
 +-------+------------------+------------------+-----------------+
 
 Batch 3: appended cleaned data to hdfs://100.109.78.104:9000/stream_output
+SUCCESS: The process with PID 30172 (child process of PID 11996) has been terminated.
+SUCCESS: The process with PID 11996 (child process of PID 13268) has been terminated.
+SUCCESS: The process with PID 13268 (child process of PID 13060) has been terminated.

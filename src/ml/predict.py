@@ -63,7 +63,7 @@ def get_prediction_labels(model):
 
 
 def add_pass_probability(predictions, labels):
-    if "Pass" not in labels:
+    if "Pass" not in labels or "probability" not in predictions.columns:
         return predictions
 
     pass_index = labels.index("Pass")
