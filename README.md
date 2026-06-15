@@ -125,6 +125,6 @@ python src/streaming/kafka_producer.py
 
 ---
 *Dự án được phát triển trong khuôn khổ Đồ án môn học Big Data - [06/2026].*
-*Tác giả: Nhóm 5 - Lê Doãn Phú,
+*Tác giả: Nhóm 7 - Lê Doãn Phú,
                    Nguyễn Kiều Minh Trí,
                    Nguyễn Khánh Hoàng*
