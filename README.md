@@ -70,7 +70,6 @@ graph LR
  ┣ 📂notebooks/          # Chứa các file Jupyter (Initial EDA, Insight Reports)
  ┣ 📂src/                # MÃ NGUỒN CHÍNH CỦA HỆ THỐNG
  ┃ ┣ 📂batch/            # Nơi chứa luồng ETL
- ┃ ┃ ┣ 📄clean_data.py   # Làm sạch lô lớn
  ┃ ┃ ┗ 📄report_sql.py   # Viết SQL báo cáo tĩnh
  ┃ ┣ 📂config/           # Nơi chứa cấu hình
  ┃ ┃ ┗ 📄settings.py     # Chứa IP của HDFS và Kafka 
